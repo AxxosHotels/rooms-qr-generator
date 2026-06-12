@@ -1,0 +1,35 @@
+# dependencies
+node_modules
+
+# next.js
+.next
+out
+
+# production
+build
+
+# local env files
+.env*
+
+# local service account keys
+keys
+Keys
+*.service-account.json
+*service-account*.json
+*service_account*.json
+*credentials*.json
+*credential*.json
+*key*.json
+*secret*.json
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# generated QR files
+public/generated/*.pdf
