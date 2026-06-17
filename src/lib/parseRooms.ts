@@ -1,5 +1,10 @@
 const MAX_ROOMS_PER_REQUEST = 100;
 
+type ParsedRoom = {
+  prefix: string;
+  number: number;
+};
+
 export type ParseRoomsErrorCode =
   | "empty"
   | "invalid"
@@ -17,21 +22,31 @@ export class ParseRoomsError extends Error {
   }
 }
 
-function parseRoomNumber(value: string): number {
-  if (!/^\d+$/.test(value)) {
+function parseRoom(value: string): ParsedRoom {
+  const match = value.match(/^([A-Za-z]*)(\d+)$/);
+
+  if (!match) {
     throw new ParseRoomsError("invalid");
   }
 
-  const room = Number(value);
+  const [, prefix, roomNumber] = match;
+  const room = Number(roomNumber);
 
   if (!Number.isSafeInteger(room) || room <= 0) {
     throw new ParseRoomsError("positive");
   }
 
-  return room;
+  return {
+    prefix: prefix.toUpperCase(),
+    number: room,
+  };
 }
 
-export function parseRooms(input: string): number[] {
+function formatRoom({ number, prefix }: ParsedRoom) {
+  return `${prefix}${number}`;
+}
+
+export function parseRooms(input: string): string[] {
   const normalizedInput = input.trim();
 
   if (!normalizedInput) {
@@ -41,25 +56,34 @@ export function parseRooms(input: string): number[] {
   const rangeParts = normalizedInput.split("-").map((part) => part.trim());
 
   if (rangeParts.length === 1) {
-    return [parseRoomNumber(rangeParts[0])];
+    return [formatRoom(parseRoom(rangeParts[0]))];
   }
 
   if (rangeParts.length !== 2 || !rangeParts[0] || !rangeParts[1]) {
     throw new ParseRoomsError("rangeFormat");
   }
 
-  const start = parseRoomNumber(rangeParts[0]);
-  const end = parseRoomNumber(rangeParts[1]);
+  const start = parseRoom(rangeParts[0]);
+  const end = parseRoom(rangeParts[1]);
 
-  if (start > end) {
+  if (start.prefix !== end.prefix) {
+    throw new ParseRoomsError("rangeFormat");
+  }
+
+  if (start.number > end.number) {
     throw new ParseRoomsError("rangeOrder");
   }
 
-  const count = end - start + 1;
+  const count = end.number - start.number + 1;
 
   if (count > MAX_ROOMS_PER_REQUEST) {
     throw new ParseRoomsError("tooMany");
   }
 
-  return Array.from({ length: count }, (_, index) => start + index);
+  return Array.from({ length: count }, (_, index) =>
+    formatRoom({
+      prefix: start.prefix,
+      number: start.number + index,
+    }),
+  );
 }

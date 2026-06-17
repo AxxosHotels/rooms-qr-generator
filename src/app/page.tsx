@@ -10,7 +10,7 @@ type GenerateSuccess = {
   success: true;
   created: Array<{
     fileId: string;
-    room: number;
+    room: string;
     fileName: string;
     downloadUrl: string;
     status: "uploaded";
@@ -19,7 +19,7 @@ type GenerateSuccess = {
   }>;
   skipped: Array<{
     fileId: string;
-    room: number;
+    room: string;
     fileName: string;
     downloadUrl: string;
     status: "already_exists";

@@ -205,7 +205,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let rooms: number[];
+  let rooms: string[];
 
   try {
     rooms = parseRooms(body.rooms);
