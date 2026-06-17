@@ -145,10 +145,10 @@ function buildDriveDownloadUrl(fileId: string) {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
-async function createRoomQrPdf(url: string, room: number) {
+async function createRoomQrPdf(url: string, overlayText: string) {
   const qrPng = await createQrPngWithRoomOverlay({
+    overlayText,
     qrSize: QR_SIZE,
-    room,
     url,
   });
 
@@ -227,7 +227,10 @@ export async function POST(request: Request) {
       rooms.map(async (room) => {
         const url = `${selectedHotel.baseUrl}?room=${room}`;
         const fileName = buildQrPdfFileName(selectedHotel, room);
-        const pdfBytes = await createRoomQrPdf(url, room);
+        const pdfBytes = await createRoomQrPdf(
+          url,
+          `${selectedHotel.shortCode} ${room}`,
+        );
         const uploadResult = await uploadPdfToHotelFolder({
           fileName,
           folderId: selectedHotel.driveFolderId,

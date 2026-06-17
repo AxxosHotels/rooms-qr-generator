@@ -1,7 +1,7 @@
 import { PNG } from "pngjs";
 import QRCode from "qrcode";
 
-const DIGIT_PATTERNS: Record<string, string[]> = {
+const CHARACTER_PATTERNS: Record<string, string[]> = {
   "0": ["11111", "10001", "10011", "10101", "11001", "10001", "11111"],
   "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
   "2": ["11111", "00001", "00001", "11111", "10000", "10000", "11111"],
@@ -12,6 +12,32 @@ const DIGIT_PATTERNS: Record<string, string[]> = {
   "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
   "8": ["11111", "10001", "10001", "11111", "10001", "10001", "11111"],
   "9": ["11111", "10001", "10001", "11111", "00001", "00001", "11111"],
+  A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+  B: ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
+  C: ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+  D: ["11110", "10001", "10001", "10001", "10001", "10001", "11110"],
+  E: ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+  F: ["11111", "10000", "10000", "11110", "10000", "10000", "10000"],
+  G: ["01111", "10000", "10000", "10011", "10001", "10001", "01111"],
+  H: ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+  I: ["11111", "00100", "00100", "00100", "00100", "00100", "11111"],
+  J: ["00111", "00010", "00010", "00010", "10010", "10010", "01100"],
+  K: ["10001", "10010", "10100", "11000", "10100", "10010", "10001"],
+  L: ["10000", "10000", "10000", "10000", "10000", "10000", "11111"],
+  M: ["10001", "11011", "10101", "10101", "10001", "10001", "10001"],
+  N: ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+  O: ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
+  P: ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+  Q: ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
+  R: ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+  S: ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+  T: ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+  U: ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+  V: ["10001", "10001", "10001", "10001", "01010", "01010", "00100"],
+  W: ["10001", "10001", "10001", "10101", "10101", "10101", "01010"],
+  X: ["10001", "01010", "00100", "00100", "00100", "01010", "10001"],
+  Y: ["10001", "01010", "00100", "00100", "00100", "00100", "00100"],
+  Z: ["11111", "00001", "00010", "00100", "01000", "10000", "11111"],
 };
 
 const BLACK = [0, 0, 0, 255] as const;
@@ -70,20 +96,20 @@ function drawRoundedRectangle({
   }
 }
 
-function drawDigit({
-  digit,
+function drawCharacter({
+  character,
   png,
   scale,
   x,
   y,
 }: {
-  digit: string;
+  character: string;
   png: PNG;
   scale: number;
   x: number;
   y: number;
 }) {
-  const pattern = DIGIT_PATTERNS[digit];
+  const pattern = CHARACTER_PATTERNS[character];
 
   if (!pattern) {
     return;
@@ -109,22 +135,33 @@ function drawDigit({
   });
 }
 
-function drawRoomNumber({
+function getCharacterColumns(character: string) {
+  return character === " " ? 3 : 5;
+}
+
+function getTextColumns(text: string) {
+  return [...text].reduce((total, character, index) => {
+    const spacing = index === 0 ? 0 : 1;
+    return total + spacing + getCharacterColumns(character);
+  }, 0);
+}
+
+function drawOverlayText({
+  overlayText,
   png,
-  room,
   rectangle,
 }: {
+  overlayText: string;
   png: PNG;
-  room: number;
   rectangle: { x: number; y: number; width: number; height: number };
 }) {
-  const digits = String(room).split("");
-  const cellColumns = digits.length * 5 + Math.max(0, digits.length - 1);
+  const characters = overlayText.toUpperCase().split("");
+  const cellColumns = getTextColumns(overlayText);
   const scale = Math.max(
-    2,
+    1,
     Math.min(
       4,
-      Math.floor((rectangle.width - 10) / cellColumns),
+      Math.floor((rectangle.width - 12) / cellColumns),
       Math.floor((rectangle.height - 8) / 7),
     ),
   );
@@ -133,19 +170,26 @@ function drawRoomNumber({
   let cursorX = rectangle.x + Math.round((rectangle.width - textWidth) / 2);
   const textY = rectangle.y + Math.round((rectangle.height - textHeight) / 2);
 
-  digits.forEach((digit) => {
-    drawDigit({ digit, png, scale, x: cursorX, y: textY });
-    cursorX += 6 * scale;
+  characters.forEach((character, index) => {
+    if (index > 0) {
+      cursorX += scale;
+    }
+
+    if (character !== " ") {
+      drawCharacter({ character, png, scale, x: cursorX, y: textY });
+    }
+
+    cursorX += getCharacterColumns(character) * scale;
   });
 }
 
 export async function createQrPngWithRoomOverlay({
+  overlayText,
   qrSize,
-  room,
   url,
 }: {
+  overlayText: string;
   qrSize: number;
-  room: number;
   url: string;
 }) {
   const qrPng = await QRCode.toBuffer(url, {
@@ -156,8 +200,8 @@ export async function createQrPngWithRoomOverlay({
   });
   const png = PNG.sync.read(qrPng);
   const rectangle = {
-    width: Math.round(qrSize * 0.15),
-    height: Math.round(qrSize * 0.064),
+    width: Math.round(qrSize * 0.25),
+    height: Math.round(qrSize * 0.072),
     x: 0,
     y: 0,
   };
@@ -174,7 +218,7 @@ export async function createQrPngWithRoomOverlay({
     x: rectangle.x,
     y: rectangle.y,
   });
-  drawRoomNumber({ png, room, rectangle });
+  drawOverlayText({ overlayText, png, rectangle });
 
   return PNG.sync.write(png);
 }
