@@ -1,4 +1,7 @@
 # Deployment test trigger comment.
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: gcr.io/cloud-builders/docker
     args:
