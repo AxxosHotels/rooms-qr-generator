@@ -45,9 +45,11 @@ const ERROR_MESSAGES: Record<
     enterRoom: "Zadejte číslo pokoje.",
     hotelNotFound: "Hotel nebyl nalezen.",
     empty: "Zadejte číslo pokoje.",
-    invalid: "Zadejte číslo pokoje nebo rozsah pokojů.",
+    invalid:
+      "Zadejte číslo pokoje nebo rozsah pokojů, například 001, D001 nebo D001-D005.",
     positive: "Číslo pokoje musí být kladné číslo.",
-    rangeFormat: "Zadejte jedno číslo pokoje nebo rozsah, například 101-105.",
+    rangeFormat:
+      "Zadejte jedno číslo pokoje nebo rozsah se stejným prefixem, například 001-003 nebo D001-D005.",
     rangeOrder: "Začátek rozsahu nesmí být větší než konec.",
     tooMany: "V jednom požadavku lze vytvořit nejvýše 100 QR kódů.",
     processRooms: "Čísla pokojů se nepodařilo zpracovat.",
@@ -59,9 +61,11 @@ const ERROR_MESSAGES: Record<
     enterRoom: "Enter a room number.",
     hotelNotFound: "Hotel was not found.",
     empty: "Enter a room number.",
-    invalid: "Enter a room number or room range.",
+    invalid:
+      "Enter a room number or room range, for example 001, D001, or D001-D005.",
     positive: "Room number must be a positive number.",
-    rangeFormat: "Enter one room number or a range, for example 101-105.",
+    rangeFormat:
+      "Enter one room number or a range with the same prefix, for example 001-003 or D001-D005.",
     rangeOrder: "The start of the range cannot be greater than the end.",
     tooMany: "You can create no more than 100 QR codes per request.",
     processRooms: "Room numbers could not be processed.",
@@ -73,9 +77,11 @@ const ERROR_MESSAGES: Record<
     enterRoom: "Введите номер комнаты.",
     hotelNotFound: "Отель не найден.",
     empty: "Введите номер комнаты.",
-    invalid: "Введите номер комнаты или диапазон комнат.",
+    invalid:
+      "Введите номер комнаты или диапазон, например 001, D001 или D001-D005.",
     positive: "Номер комнаты должен быть положительным числом.",
-    rangeFormat: "Введите один номер комнаты или диапазон, например 101-105.",
+    rangeFormat:
+      "Введите один номер комнаты или диапазон с одинаковым префиксом, например 001-003 или D001-D005.",
     rangeOrder: "Начало диапазона не может быть больше конца.",
     tooMany: "Можно создать не больше 100 QR-кодов за один запрос.",
     processRooms: "Не удалось обработать номера комнат.",

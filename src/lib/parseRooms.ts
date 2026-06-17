@@ -1,6 +1,7 @@
 const MAX_ROOMS_PER_REQUEST = 100;
 
 type ParsedRoom = {
+  numberText: string;
   prefix: string;
   number: number;
 };
@@ -37,13 +38,22 @@ function parseRoom(value: string): ParsedRoom {
   }
 
   return {
+    numberText: roomNumber,
     prefix: prefix.toUpperCase(),
     number: room,
   };
 }
 
-function formatRoom({ number, prefix }: ParsedRoom) {
-  return `${prefix}${number}`;
+function formatRoomWithPadding({
+  number,
+  padding,
+  prefix,
+}: {
+  number: number;
+  padding: number;
+  prefix: string;
+}) {
+  return `${prefix}${String(number).padStart(padding, "0")}`;
 }
 
 export function parseRooms(input: string): string[] {
@@ -56,7 +66,9 @@ export function parseRooms(input: string): string[] {
   const rangeParts = normalizedInput.split("-").map((part) => part.trim());
 
   if (rangeParts.length === 1) {
-    return [formatRoom(parseRoom(rangeParts[0]))];
+    const room = parseRoom(rangeParts[0]);
+
+    return [`${room.prefix}${room.numberText}`];
   }
 
   if (rangeParts.length !== 2 || !rangeParts[0] || !rangeParts[1]) {
@@ -81,7 +93,8 @@ export function parseRooms(input: string): string[] {
   }
 
   return Array.from({ length: count }, (_, index) =>
-    formatRoom({
+    formatRoomWithPadding({
+      padding: start.numberText.length,
       prefix: start.prefix,
       number: start.number + index,
     }),
