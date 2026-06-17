@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
-import QRCode from "qrcode";
 
 import { buildQrPdfFileName } from "@/lib/fileNames";
 import { uploadPdfToHotelFolder } from "@/lib/googleDrive";
 import { getHotelBySlug } from "@/lib/hotels";
 import { ParseRoomsError, parseRooms } from "@/lib/parseRooms";
+import { createQrPngWithRoomOverlay } from "@/lib/qrOverlay";
 
 export const runtime = "nodejs";
 
@@ -141,12 +141,11 @@ function buildUploadErrorMessage(locale: Locale, error: unknown) {
   return details.join("\n");
 }
 
-async function createRoomQrPdf(url: string) {
-  const qrPng = await QRCode.toBuffer(url, {
-    errorCorrectionLevel: "M",
-    margin: 0,
-    type: "png",
-    width: QR_SIZE,
+async function createRoomQrPdf(url: string, room: number) {
+  const qrPng = await createQrPngWithRoomOverlay({
+    qrSize: QR_SIZE,
+    room,
+    url,
   });
 
   const pdf = await PDFDocument.create();
@@ -224,7 +223,7 @@ export async function POST(request: Request) {
       rooms.map(async (room) => {
         const url = `${selectedHotel.baseUrl}?room=${room}`;
         const fileName = buildQrPdfFileName(selectedHotel, room);
-        const pdfBytes = await createRoomQrPdf(url);
+        const pdfBytes = await createRoomQrPdf(url, room);
         const uploadResult = await uploadPdfToHotelFolder({
           fileName,
           folderId: selectedHotel.driveFolderId,
