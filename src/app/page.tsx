@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { HOTELS } from "@/lib/hotels";
 
@@ -34,10 +34,18 @@ type GenerateError = {
 
 type GenerateResponse = GenerateSuccess | GenerateError;
 
+type FolderCountsResponse = {
+  success: true;
+  counts: Array<{
+    slug: string;
+    count: number | null;
+  }>;
+};
+
 const COPY: Record<
   Locale,
   {
-    appLabel: string;
+    logoAlt: string;
     title: string;
     warning: string;
     foldersLabel: string;
@@ -54,10 +62,11 @@ const COPY: Record<
     uploadedFiles: string;
     skippedFiles: string;
     requestFailed: string;
+    folderFiles: (count: number | null | undefined) => string;
   }
 > = {
   cs: {
-    appLabel: "Tollar Hotels",
+    logoAlt: "Axxos Hotels",
     title: "QR Tollar kódy pro hotelové pokoje",
     warning:
       "Než vygenerujete nový kód, zkontrolujte, zda už takový kód neexistuje.",
@@ -75,9 +84,10 @@ const COPY: Record<
     uploadedFiles: "Nahrané soubory",
     skippedFiles: "Již existují",
     requestFailed: "Požadavek se nepodařilo odeslat. Zkuste to znovu.",
+    folderFiles: (count) => `${count ?? "—"} souborů`,
   },
   en: {
-    appLabel: "Tollar Hotels",
+    logoAlt: "Axxos Hotels",
     title: "QR Tollar codes for hotel rooms",
     warning:
       "Before generating a new code, check whether this code already exists.",
@@ -95,9 +105,10 @@ const COPY: Record<
     uploadedFiles: "Uploaded files",
     skippedFiles: "Already exists",
     requestFailed: "The request could not be sent. Try again.",
+    folderFiles: (count) => `${count ?? "—"} files`,
   },
   ru: {
-    appLabel: "Tollar Hotels",
+    logoAlt: "Axxos Hotels",
     title: "QR Tollar коды для номеров в отелях",
     warning:
       "Прежде чем генерировать новый код, посмотрите, возможно такой код уже есть.",
@@ -115,6 +126,7 @@ const COPY: Record<
     uploadedFiles: "Загруженные файлы",
     skippedFiles: "Уже существуют",
     requestFailed: "Не удалось отправить запрос. Попробуйте еще раз.",
+    folderFiles: (count) => `${count ?? "—"} файлов`,
   },
 };
 
@@ -131,7 +143,43 @@ export default function Home() {
   const [result, setResult] = useState<GenerateSuccess | null>(null);
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [folderCounts, setFolderCounts] = useState<
+    Record<string, number | null | undefined>
+  >({});
   const copy = COPY[locale];
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadFolderCounts() {
+      try {
+        const response = await fetch("/api/folder-counts");
+        const data = (await response.json()) as FolderCountsResponse;
+
+        if (!isActive || !data.success) {
+          return;
+        }
+
+        setFolderCounts(
+          Object.fromEntries(
+            data.counts.map((item) => [item.slug, item.count]),
+          ),
+        );
+      } catch {
+        if (isActive) {
+          setFolderCounts(
+            Object.fromEntries(HOTELS.map((hotel) => [hotel.slug, null])),
+          );
+        }
+      }
+    }
+
+    loadFolderCounts();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -167,7 +215,11 @@ export default function Home() {
       <section className="workspace">
         <header className="page-header">
           <div>
-            <p className="eyebrow">{copy.appLabel}</p>
+            <img
+              alt={copy.logoAlt}
+              className="header-logo"
+              src="/Axxos_Logo_RGB.png"
+            />
             <h1>{copy.title}</h1>
           </div>
 
@@ -189,17 +241,12 @@ export default function Home() {
           </div>
         </header>
 
-        <p className="notice">
-          <span aria-hidden="true" className="notice__icon">
-            ⚠️
-          </span>
-          <span>{copy.warning}</span>
-        </p>
-
         <div className="drive-links" aria-label={copy.foldersLabel}>
           {HOTELS.map((hotel) => (
             <a
-              className="drive-link"
+              className={`drive-link${
+                hotel.slug === hotelId ? " drive-link--selected" : ""
+              }`}
               href={hotel.folderUrl}
               key={hotel.slug}
               rel="noreferrer"
@@ -208,7 +255,12 @@ export default function Home() {
               <span aria-hidden="true" className="folder-icon">
                 <span className="folder-icon__tab" />
               </span>
-              <span className="drive-link__name">{hotel.name}</span>
+              <span className="drive-link__content">
+                <span className="drive-link__name">{hotel.name}</span>
+                <span className="drive-link__count">
+                  {copy.folderFiles(folderCounts[hotel.slug])}
+                </span>
+              </span>
               <span aria-hidden="true" className="drive-link__menu">
                 ...
               </span>
@@ -218,6 +270,12 @@ export default function Home() {
 
         <section className="generator-card">
           <h2>{copy.generatorTitle}</h2>
+          <p className="notice">
+            <span aria-hidden="true" className="notice__icon">
+              ⚠️
+            </span>
+            <span>{copy.warning}</span>
+          </p>
 
           <form className="form" onSubmit={handleSubmit}>
             <label className="field">

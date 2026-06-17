@@ -57,13 +57,11 @@ select {
   justify-content: space-between;
 }
 
-.eyebrow {
-  margin: 0 0 10px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
+.header-logo {
+  display: block;
+  width: auto;
+  height: 36px;
+  margin-bottom: 14px;
 }
 
 h1,
@@ -169,6 +167,15 @@ h4 {
   transform: translateY(-1px);
 }
 
+.drive-link--selected {
+  border-color: #b8bec8;
+  background: #eceff3;
+}
+
+.drive-link--selected:hover {
+  background: #e8ebf0;
+}
+
 .folder-icon {
   position: relative;
   width: 28px;
@@ -194,6 +201,18 @@ h4 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.drive-link__content {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.drive-link__count {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .drive-link__menu {

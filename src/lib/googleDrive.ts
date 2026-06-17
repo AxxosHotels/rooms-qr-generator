@@ -141,3 +141,30 @@ export async function uploadPdfToHotelFolder({
     webViewLink: createdFile.data.webViewLink ?? null,
   };
 }
+
+export async function countPdfFilesInFolder(folderId: string): Promise<number> {
+  const drive = getDriveClient();
+  const escapedFolderId = escapeDriveQueryValue(folderId);
+  let nextPageToken: string | undefined;
+  let count = 0;
+
+  do {
+    const response = await drive.files.list({
+      fields: "nextPageToken,files(id)",
+      pageSize: 1000,
+      pageToken: nextPageToken,
+      q: [
+        `'${escapedFolderId}' in parents`,
+        "mimeType = 'application/pdf'",
+        "trashed = false",
+      ].join(" and "),
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+
+    count += response.data.files?.length ?? 0;
+    nextPageToken = response.data.nextPageToken ?? undefined;
+  } while (nextPageToken);
+
+  return count;
+}
