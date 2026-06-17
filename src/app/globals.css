@@ -156,9 +156,10 @@ h4 {
   font-weight: 700;
   text-decoration: none;
   transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    transform 140ms ease;
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease;
 }
 
 .drive-link:hover {
@@ -168,12 +169,16 @@ h4 {
 }
 
 .drive-link--selected {
-  border-color: #b8bec8;
-  background: #eceff3;
+  border-color: #e30613;
+  border-width: 2px;
+  background: rgba(227, 6, 19, 0.04);
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.12);
 }
 
 .drive-link--selected:hover {
-  background: #e8ebf0;
+  border-color: #e30613;
+  background: rgba(227, 6, 19, 0.06);
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.14);
 }
 
 .folder-icon {
@@ -203,6 +208,13 @@ h4 {
   white-space: nowrap;
 }
 
+.drive-link__name-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
 .drive-link__content {
   display: grid;
   gap: 4px;
@@ -213,6 +225,21 @@ h4 {
   color: var(--muted);
   font-size: 12px;
   font-weight: 600;
+}
+
+.drive-link__selected {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e30613;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .drive-link__menu {

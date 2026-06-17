@@ -256,7 +256,14 @@ export default function Home() {
                 <span className="folder-icon__tab" />
               </span>
               <span className="drive-link__content">
-                <span className="drive-link__name">{hotel.name}</span>
+                <span className="drive-link__name-row">
+                  <span className="drive-link__name">{hotel.name}</span>
+                  {hotel.slug === hotelId ? (
+                    <span aria-hidden="true" className="drive-link__selected">
+                      ✓
+                    </span>
+                  ) : null}
+                </span>
                 <span className="drive-link__count">
                   {copy.folderFiles(folderCounts[hotel.slug])}
                 </span>
