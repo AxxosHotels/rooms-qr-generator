@@ -189,7 +189,12 @@ export default function Home() {
           </div>
         </header>
 
-        <p className="notice">{copy.warning}</p>
+        <p className="notice">
+          <span aria-hidden="true" className="notice__icon">
+            ⚠️
+          </span>
+          <span>{copy.warning}</span>
+        </p>
 
         <div className="drive-links" aria-label={copy.foldersLabel}>
           {HOTELS.map((hotel) => (
@@ -200,7 +205,13 @@ export default function Home() {
               rel="noreferrer"
               target="_blank"
             >
-              {hotel.name}
+              <span aria-hidden="true" className="folder-icon">
+                <span className="folder-icon__tab" />
+              </span>
+              <span className="drive-link__name">{hotel.name}</span>
+              <span aria-hidden="true" className="drive-link__menu">
+                ...
+              </span>
             </a>
           ))}
         </div>

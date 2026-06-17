@@ -46,7 +46,7 @@ select {
 .workspace {
   display: grid;
   gap: 22px;
-  width: min(100%, 980px);
+  width: min(100%, 1180px);
   margin: 0 auto;
 }
 
@@ -124,39 +124,83 @@ h4 {
 }
 
 .notice {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--panel);
+  display: flex;
+  gap: 8px;
+  align-items: start;
   color: var(--muted);
-  padding: 14px 16px;
+  font-size: 14px;
   line-height: 1.45;
+}
+
+.notice__icon {
+  flex: 0 0 auto;
+  line-height: 1.35;
 }
 
 .drive-links {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .drive-link {
-  display: inline-flex;
-  min-height: 44px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 66px;
   align-items: center;
-  justify-content: center;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--panel);
-  padding: 10px 14px;
+  background: #f3f4f6;
+  gap: 10px;
+  padding: 12px;
   color: var(--foreground);
   font-size: 14px;
   font-weight: 700;
-  text-align: center;
   text-decoration: none;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
 }
 
 .drive-link:hover {
   border-color: var(--border-strong);
-  background: var(--panel-soft);
+  background: #eef0f3;
+  transform: translateY(-1px);
+}
+
+.folder-icon {
+  position: relative;
+  width: 28px;
+  height: 22px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  background: #ffffff;
+}
+
+.folder-icon__tab {
+  position: absolute;
+  top: -5px;
+  left: 3px;
+  width: 13px;
+  height: 7px;
+  border: 1px solid #d1d5db;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: #ffffff;
+}
+
+.drive-link__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drive-link__menu {
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .generator-card {
@@ -291,6 +335,12 @@ h4 {
   white-space: nowrap;
 }
 
+@media (max-width: 980px) {
+  .drive-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 720px) {
   .page-shell {
     padding: 24px 14px;
@@ -312,5 +362,11 @@ h4 {
 
   .generator-card {
     padding: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .drive-links {
+    grid-template-columns: 1fr;
   }
 }
