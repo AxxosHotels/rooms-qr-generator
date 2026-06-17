@@ -7,13 +7,13 @@ steps:
     args:
       - build
       - -t
-      - gcr.io/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
+      - europe-west1-docker.pkg.dev/rooms-qr-generator/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
       - .
 
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - gcr.io/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
+      - europe-west1-docker.pkg.dev/rooms-qr-generator/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: gcloud
@@ -22,7 +22,7 @@ steps:
       - deploy
       - rooms-qr-generator
       - --image
-      - gcr.io/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
+      - europe-west1-docker.pkg.dev/rooms-qr-generator/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
       - --project
       - rooms-qr-generator
       - --region
@@ -34,4 +34,4 @@ steps:
       - GOOGLE_SERVICE_ACCOUNT_JSON=google-service-account-json:latest
 
 images:
-  - gcr.io/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
+  - europe-west1-docker.pkg.dev/rooms-qr-generator/rooms-qr-generator/rooms-qr-generator:$SHORT_SHA
