@@ -141,6 +141,10 @@ function buildUploadErrorMessage(locale: Locale, error: unknown) {
   return details.join("\n");
 }
 
+function buildDriveDownloadUrl(fileId: string) {
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+}
+
 async function createRoomQrPdf(url: string, room: number) {
   const qrPng = await createQrPngWithRoomOverlay({
     qrSize: QR_SIZE,
@@ -234,6 +238,7 @@ export async function POST(request: Request) {
           room,
           fileName,
           fileId: uploadResult.fileId,
+          downloadUrl: buildDriveDownloadUrl(uploadResult.fileId),
           status: uploadResult.status,
           url,
           webViewLink: uploadResult.webViewLink,

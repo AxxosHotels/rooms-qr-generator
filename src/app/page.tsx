@@ -12,6 +12,7 @@ type GenerateSuccess = {
     fileId: string;
     room: number;
     fileName: string;
+    downloadUrl: string;
     status: "uploaded";
     url: string;
     webViewLink: string | null;
@@ -20,6 +21,7 @@ type GenerateSuccess = {
     fileId: string;
     room: number;
     fileName: string;
+    downloadUrl: string;
     status: "already_exists";
     url: string;
     webViewLink: string | null;
@@ -61,6 +63,7 @@ const COPY: Record<
     openFolder: string;
     uploadedFiles: string;
     skippedFiles: string;
+    download: string;
     requestFailed: string;
     folderFiles: (count: number | null | undefined) => string;
   }
@@ -83,6 +86,7 @@ const COPY: Record<
     openFolder: "Otevřít složku hotelu",
     uploadedFiles: "Nahrané soubory",
     skippedFiles: "Již existují",
+    download: "Stáhnout",
     requestFailed: "Požadavek se nepodařilo odeslat. Zkuste to znovu.",
     folderFiles: (count) => `${count ?? "—"} souborů`,
   },
@@ -104,6 +108,7 @@ const COPY: Record<
     openFolder: "Open hotel folder",
     uploadedFiles: "Uploaded files",
     skippedFiles: "Already exists",
+    download: "Download",
     requestFailed: "The request could not be sent. Try again.",
     folderFiles: (count) => `${count ?? "—"} files`,
   },
@@ -125,6 +130,7 @@ const COPY: Record<
     openFolder: "Открыть папку отеля",
     uploadedFiles: "Загруженные файлы",
     skippedFiles: "Уже существуют",
+    download: "Скачать",
     requestFailed: "Не удалось отправить запрос. Попробуйте еще раз.",
     folderFiles: (count) => `${count ?? "—"} файлов`,
   },
@@ -341,6 +347,14 @@ export default function Home() {
                     {result.created.map((file) => (
                       <li className="file-list__item" key={file.fileName}>
                         <span>{file.fileName}</span>
+                        <a
+                          className="download-button"
+                          href={file.downloadUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {copy.download}
+                        </a>
                       </li>
                     ))}
                   </ul>
@@ -354,6 +368,14 @@ export default function Home() {
                     {result.skipped.map((file) => (
                       <li className="file-list__item" key={file.fileName}>
                         <span>{file.fileName}</span>
+                        <a
+                          className="download-button"
+                          href={file.downloadUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {copy.download}
+                        </a>
                       </li>
                     ))}
                   </ul>
